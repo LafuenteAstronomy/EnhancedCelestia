@@ -148,7 +148,7 @@ For pull requests, please stick to the following guidelines:
 # Enhanced Celestia info:
 
 # Welcome to Enhanced Celestia!
-The Enhanced Celestia (Or Cel+ for short) aims to enhance Celestia itself, by adding many new features that cant be achieved by simple addons.
+The Enhanced Celestia project (Or Cel+ for short) aims to enhance Celestia itself, by adding many new features that cant be achieved by simple addons.
 **Keep in mind that Cel+ isnt an addon collection!**
 
 ## Planned features
