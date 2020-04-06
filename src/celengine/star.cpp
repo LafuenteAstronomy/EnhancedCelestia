@@ -139,7 +139,34 @@ static float tempY[10] =
 static float tempWD[10] =
 {
     100000.0f, 50400.0f, 25200.0f, 16800.0f, 12600.0f,
-    10080.0f, 8400.0f, 7200.0f, 6300.0f, 5600.0f,
+    10080.0f, 8400.0f, 7200.0f, 6300.0f, 5600.0f
+};
+
+// Neutron star temperatures
+static float tempQ[10] =
+{
+    2000000000.0f, 1000000000.0f, 100000000.0f, 50000000.0f, 10000000.0f,
+    5000000.0f, 1000000.0f, 500000.0f, 100000.0f, 10000.0f
+};
+
+static float tempQN[10] =
+{
+    2000000000.0f, 1000000000.0f, 100000000.0f, 50000000.0f, 10000000.0f,
+    5000000.0f, 1000000.0f, 500000.0f, 100000.0f, 10000.0f
+};
+
+// Pulsars have shorter lifespans, so they dont have that much time to cool down
+static float tempQP[10] =
+{
+    2000000000.0f, 1000000000.0f, 500000000.0f, 100000000.0f, 75000000.0f, 50000000.0f, 25000000.0f,
+    10000000.0f, 7500000.0f, 5000000.0f
+};
+
+// Magnetars have even shorter lifespans, so they have even less time to cool down
+static float tempQM[10] =
+{
+    2000000000.0f, 1000000000.0f, 750000000.0f, 500000000.0f, 250000000.0f, 100000000.0f, 75000000.0f,
+    50000000.0f, 25000000.0f, 10000000.0f,
 };
 
 
@@ -393,6 +420,10 @@ const char* WDSpectralClassNames[StellarClass::WDClassCount] = {
     "DA", "DB", "DC", "DO", "DQ", "DZ", "D", "DX",
 };
 
+const char* NeutronStarsSpectralClassNames[StellarClass::NeutronStarsClassCount] = {
+    "Q", "QN", "QP", "QM"
+};
+
 
 StarDetails*
 StarDetails::GetStarDetails(const StellarClass& sc)
@@ -408,7 +439,8 @@ StarDetails::GetStarDetails(const StellarClass& sc)
         return GetWhiteDwarfDetails(sc.getSpectralClass(),
                                     sc.getSubclass());
     case StellarClass::NeutronStar:
-        return GetNeutronStarDetails();
+        return GetNeutronStarDetails(sc.getSpectralClass(),
+                                    sc.getSubclass());
     case StellarClass::BlackHole:
         return GetBlackHoleDetails();
     default:
@@ -692,13 +724,13 @@ StarDetails::GetWhiteDwarfDetails(StellarClass::SpectralClass specClass,
         // subclass is always >= 0:
         if (subclass <= 9)
         {
-            temp = tempWD[subclass];
+            temp = tempQ[subclass];
             bmagCorrection = bmag_correctionWD[subclass];
         }
         else
         {
             // Treat unknown as subclass 5
-            temp = tempWD[5];
+            temp = tempQ[5];
             bmagCorrection = bmag_correctionWD[5];
         }
 
@@ -721,21 +753,95 @@ StarDetails::GetWhiteDwarfDetails(StellarClass::SpectralClass specClass,
 StarDetails*
 StarDetails::GetNeutronStarDetails()
 {
-    if (neutronStarDetails == nullptr)
+    // Hack assumes all neutron star types are consecutive
+    unsigned int scIndex = static_cast<unsigned int>(specClass) -
+        StellarClass::FirstNeutronStarClass;
+    
+    if (NeutronStarDetails == nullptr)
     {
-        // The default neutron star has a rotation period of one second,
-        // surface temperature of five million K.
-        neutronStarDetails = CreateStandardStarType("Q", 5000000.0f,
-                                                    1.0f / 86400.0f);
-        neutronStarDetails->setRadius(10.0f);
-        neutronStarDetails->addKnowledge(KnowRadius);
-        MultiResTexture starTex = starTextures.neutronStarTex;
-        if (!starTex.isValid())
-            starTex = starTextures.defaultTex;
-        neutronStarDetails->setTexture(starTex);
+        unsigned int nTypes =
+            StellarClass::NeutronStarsClassCount * StellarClass::SubclassCount;
+        NeutronStarDetails = new StarDetails*[nTypes];
+        for (unsigned int i = 0; i < nTypes; i++)
+            neutronStarDetails[i] = nullptr;
     }
 
-    return neutronStarDetails;
+    if (subclass > StellarClass::Subclass_Unknown)
+        subclass = StellarClass::Subclass_Unknown;
+
+    unsigned int index = subclass + (scIndex * StellarClass::SubclassCount);
+    if (NeutronStarDetails[index] == nullptr)
+    {
+        string name;
+        name = fmt::sprintf("%s%s",
+                            NeutronStarsSpectralClassNames[scIndex],
+                            SubclassNames[subclass]);
+        
+        // Use the same properties for an unknown neutron star subclass as for subclass 7
+        if (subclass == StellarClass::Subclass_Unknown)
+        {
+            // Other neutron stars default to subclass 7
+            // Pulsars default to subclass 6
+            // Magnetars default to subclass 5
+            switch (specClass)
+            {
+            case StellarClass::Spectral_QP:
+                subclass = 6;
+                break;
+            case StellarClass::Spectral_QM:
+                subclass = 5;
+                break;
+            default:
+                subclass = 7;
+                break;
+            }
+        }
+        
+        float temp;
+        float bmagCorrection;
+        switch (specClass)
+        {
+        case StellarClass::Spectral_Q:
+            temp = tempQ[subclass];
+            break;
+        case StellarClass::Spectral_QN:
+            temp = tempQN[subclass];
+            break;
+        case StellarClass::Spectral_QP:
+            temp = tempQP[subclass];
+            break;
+        case StellarClass::Spectral_QM:
+            temp = tempQM[subclass];
+            break;
+
+        default: break;  // Do nothing, but prevent GCC4 warnings (Beware: potentially dangerous)
+        }
+
+        // Normal neutron stars will have their normal default: 1 second
+        // Pulsars will get their rotations set to 10 miliseconds
+        // Magnetars will get their rotations set to 10 seconds
+        float period = 1.0f / 86400.0f;
+        switch (specClass)
+        {
+        case StellarClass::Spectral_QP:
+            period = 1.0f / 8640000.0f;
+            break;
+        case StellarClass::Spectral_QM:
+            period = 1.0f / 8640.0f;
+            break;
+
+        default: break;  // Do nothing, but prevent GCC4 warnings (Beware: potentially dangerous)
+        }
+
+        NeutronStarDetails[index] = CreateStandardStarType(name, temp, period);
+        MultiResTexture starTex = starTextures.starTex[StellarClass::Spectral_D];
+        if (!starTex.isValid())
+            starTex = starTextures.defaultTex;
+        NeutronStarDetails[index]->setTexture(starTex);
+        NeutronStarDetails[index]->setBolometricCorrection(bmagCorrection);
+    }
+
+    return neutronStarDetails[index];
 }
 
 
