@@ -131,7 +131,8 @@ class StarDetails
                                              StellarClass::LuminosityClass lumClass);
     static StarDetails* GetWhiteDwarfDetails(StellarClass::SpectralClass specClass,
                                              unsigned int subclass);
-    static StarDetails* GetNeutronStarDetails();
+    static StarDetails* GetNeutronStarDetails(StellarClass::SpectralClass specClass,
+                                             unsigned int subclass);
     static StarDetails* GetBlackHoleDetails();
     static StarDetails* GetBarycenterDetails();
 
