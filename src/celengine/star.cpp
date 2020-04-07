@@ -848,7 +848,7 @@ StarDetails::GetNeutronStarDetails()
         }
 
         NeutronStarDetails[index] = CreateStandardStarType(name, temp, period);
-        MultiResTexture starTex = starTextures.starTex[StellarClass::Spectral_D];
+        MultiResTexture starTex = starTextures.starTex[StellarClass::Spectral_Q];
         if (!starTex.isValid())
             starTex = starTextures.defaultTex;
         NeutronStarDetails[index]->setTexture(starTex);
