@@ -117,6 +117,12 @@ static float tempWC[10] =
     60000, 60000, 60000, 60000, 60000, 60000, 60000, 54000, 46000, 38000
 };
 
+// WO2 to WO4 temperatures taken from a sample of 6 WO stars.
+// Other temperatures are estimates.
+static float tempWC[10] =
+{
+    250000, 225000, 200000, 160000, 129500, 100000, 85000, 75000, 65000, 50000
+};
 // Brown dwarf temperatures. From this website:
 // https://www.pas.rochester.edu/~emamajek/EEM_dwarf_UBVIJHK_colors_Teff.txt
 // Data for types after Y2 (which are not actually used) is extrapolated.
@@ -413,7 +419,7 @@ const char* SubclassNames[11] = {
 
 const char* SpectralClassNames[StellarClass::NormalClassCount] = {
     "O", "B", "A", "F", "G", "K", "M", "R",
-    "S", "N", "WC", "WN", "?", "L", "T", "Y", "C",
+    "S", "N", "WC", "WN", "WO", "?", "L", "T", "Y", "C",
 };
 
 const char* WDSpectralClassNames[StellarClass::WDClassCount] = {
@@ -522,6 +528,10 @@ StarDetails::GetNormalStarDetails(StellarClass::SpectralClass specClass,
             case StellarClass::Spectral_WC:
                 subclass = 9;
                 break;
+            // WO4 stars in the sampple are more common than other WO stars.
+            case StellarClass::Spectral_WO:
+                subclass = 4;
+                break;
             case StellarClass::Spectral_Y:
                 subclass = 0;
                 break;
@@ -596,6 +606,9 @@ StarDetails::GetNormalStarDetails(StellarClass::SpectralClass specClass,
         case StellarClass::Spectral_WC:
             temp = tempWC[subclass];
             break;
+        case StellarClass::Spectral_WO:
+            temp = tempWO[subclass];
+            break;
         case StellarClass::Spectral_L:
             temp = tempL[subclass];
             break;
@@ -653,6 +666,7 @@ StarDetails::GetNormalStarDetails(StellarClass::SpectralClass specClass,
 
         case StellarClass::Spectral_WC:
         case StellarClass::Spectral_WN:
+        case StellarClass::Spectral_WO:
             period = rotperiod_O[lumIndex][subclass];
             bmagCorrection = bmag_correctionO[lumIndex][subclass];
             break;
