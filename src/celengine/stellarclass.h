@@ -68,7 +68,7 @@ public:
         FirstNeutronStarClass = 25,
         NeutronStarClassCount = 4,
         SubclassCount = 11,
-        NormalClassCount = 17,
+        NormalClassCount = 18,
     };
 
     enum LuminosityClass
