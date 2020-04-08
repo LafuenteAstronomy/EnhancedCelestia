@@ -738,13 +738,13 @@ StarDetails::GetWhiteDwarfDetails(StellarClass::SpectralClass specClass,
         // subclass is always >= 0:
         if (subclass <= 9)
         {
-            temp = tempQ[subclass];
+            temp = tempWD[subclass];
             bmagCorrection = bmag_correctionWD[subclass];
         }
         else
         {
             // Treat unknown as subclass 5
-            temp = tempQ[5];
+            temp = tempWD[5];
             bmagCorrection = bmag_correctionWD[5];
         }
 
@@ -752,8 +752,7 @@ StarDetails::GetWhiteDwarfDetails(StellarClass::SpectralClass specClass,
         // rough, as white rotation rates vary a lot.
         float period = 1.0f / 48.0f;
 
-        whiteDwarfDetails[index] = CreateStandardStarType(name, temp, period);
-        MultiResTexture starTex = starTextures.starTex[StellarClass::Spectral_D];
+        MultiResTexture starTex = starTextures.starTex[specClass];
         if (!starTex.isValid())
             starTex = starTextures.defaultTex;
         whiteDwarfDetails[index]->setTexture(starTex);
@@ -848,8 +847,7 @@ StarDetails::GetNeutronStarDetails(StellarClass::SpectralClass specClass,
         default: break;  // Do nothing, but prevent GCC4 warnings (Beware: potentially dangerous)
         }
 
-        neutronStarDetails[index] = CreateStandardStarType(name, temp, period);
-        MultiResTexture starTex = starTextures.starTex[StellarClass::Spectral_Q];
+        MultiResTexture starTex = starTextures.starTex[specClass];
         if (!starTex.isValid())
             starTex = starTextures.defaultTex;
         neutronStarDetails[index]->setTexture(starTex);
