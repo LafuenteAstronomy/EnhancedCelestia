@@ -119,7 +119,7 @@ static float tempWC[10] =
 
 // WO2 to WO4 temperatures taken from a sample of 6 WO stars.
 // Other temperatures are estimates.
-static float tempWC[10] =
+static float tempWO[10] =
 {
     250000, 225000, 200000, 160000, 129500, 100000, 85000, 75000, 65000, 50000
 };
@@ -419,14 +419,14 @@ const char* SubclassNames[11] = {
 
 const char* SpectralClassNames[StellarClass::NormalClassCount] = {
     "O", "B", "A", "F", "G", "K", "M", "R",
-    "S", "N", "WC", "WN", "WO", "?", "L", "T", "Y", "C",
+    "S", "N", "WC", "WN", "WO", "?", "L", "T", "Y", "C"
 };
 
 const char* WDSpectralClassNames[StellarClass::WDClassCount] = {
     "DA", "DB", "DC", "DO", "DQ", "DZ", "D", "DX",
 };
 
-const char* NeutronStarsSpectralClassNames[StellarClass::NeutronStarsClassCount] = {
+const char* NeutronStarsSpectralClassNames[StellarClass::NeutronStarClassCount] = {
     "Q", "QN", "QP", "QM"
 };
 
@@ -446,7 +446,7 @@ StarDetails::GetStarDetails(const StellarClass& sc)
                                     sc.getSubclass());
     case StellarClass::NeutronStar:
         return GetNeutronStarDetails(sc.getSpectralClass(),
-                                    sc.getSubclass());
+                                     sc.getSubclass());
     case StellarClass::BlackHole:
         return GetBlackHoleDetails();
     default:
@@ -765,26 +765,27 @@ StarDetails::GetWhiteDwarfDetails(StellarClass::SpectralClass specClass,
 
 
 StarDetails*
-StarDetails::GetNeutronStarDetails()
+StarDetails::GetNeutronStarDetails(StellarClass::SpectralClass specClass,
+                                  unsigned int subclass)
 {
     // Hack assumes all neutron star types are consecutive
     unsigned int scIndex = static_cast<unsigned int>(specClass) -
         StellarClass::FirstNeutronStarClass;
     
-    if (NeutronStarDetails == nullptr)
+    if (neutronStarDetails == nullptr)
     {
         unsigned int nTypes =
-            StellarClass::NeutronStarsClassCount * StellarClass::SubclassCount;
-        NeutronStarDetails = new StarDetails*[nTypes];
+            StellarClass::NeutronStarClassCount * StellarClass::SubclassCount;
+        neutronStarDetails = new StarDetails * [nTypes];
         for (unsigned int i = 0; i < nTypes; i++)
-            neutronStarDetails[i] = nullptr;
+            neutronStarDetails[i] = nullptr
     }
 
     if (subclass > StellarClass::Subclass_Unknown)
         subclass = StellarClass::Subclass_Unknown;
 
     unsigned int index = subclass + (scIndex * StellarClass::SubclassCount);
-    if (NeutronStarDetails[index] == nullptr)
+    if (neutronStarDetails[index] == nullptr)
     {
         string name;
         name = fmt::sprintf("%s%s",
