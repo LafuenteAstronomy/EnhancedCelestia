@@ -46,7 +46,7 @@ struct SpectralTypeInfo
 
 static StarDetails** normalStarDetails = nullptr;
 static StarDetails** whiteDwarfDetails = nullptr;
-static StarDetails*  neutronStarDetails = nullptr;
+static StarDetails** neutronStarDetails = nullptr;
 static StarDetails*  blackHoleDetails = nullptr;
 static StarDetails*  barycenterDetails = nullptr;
 
@@ -776,7 +776,7 @@ StarDetails::GetNeutronStarDetails(StellarClass::SpectralClass specClass,
     {
         unsigned int nTypes =
             StellarClass::NeutronStarClassCount * StellarClass::SubclassCount;
-        neutronStarDetails = new StarDetails * [nTypes];
+        neutronStarDetails = new StarDetails*[nTypes];
         for (unsigned int i = 0; i < nTypes; i++)
             neutronStarDetails[i] = nullptr
     }
