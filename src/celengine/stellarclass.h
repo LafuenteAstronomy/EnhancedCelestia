@@ -54,7 +54,7 @@ public:
         Spectral_DZ    = 23, // white dwarf Z, metal lines only, no H or He
         Spectral_D     = 24, // generic white dwarf, no additional data
         Spectral_DX    = 25,
-        Spectral_QN    = 26, // generic neutron star, some data known about it
+        Spectral_QN    = 26, // non-pulsating neutron star
         Spectral_QP    = 27, // pulsar
         Spectral_QM    = 28, // magnetar
         Spectral_Q     = 29, // generic neutron star, no additional data
