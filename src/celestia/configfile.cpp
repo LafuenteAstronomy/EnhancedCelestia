@@ -298,16 +298,19 @@ CelestiaConfig* ReadCelestiaConfig(const fs::path& filename, CelestiaConfig *con
             starTexTable->getString("Y", starTexNames[StellarClass::Spectral_Y]);
             starTexTable->getString("C", starTexNames[StellarClass::Spectral_C]);
 
-            // One texture for all white dwarf types; not sure if this needs to be
-            // changed. White dwarfs vary widely in temperature, so texture choice
-            // should probably be based on that instead of spectral type.
-            starTexTable->getString("WD", starTexNames[StellarClass::Spectral_D]);
+            starTexTable->getString("D", starTexNames[StellarClass::Spectral_D]);
+            starTexTable->getString("DA", starTexNames[StellarClass::Spectral_DA]);
+            starTexTable->getString("DB", starTexNames[StellarClass::Spectral_DB]);
+            starTexTable->getString("DC", starTexNames[StellarClass::Spectral_DC]);
+            starTexTable->getString("DO", starTexNames[StellarClass::Spectral_DO]);
+            starTexTable->getString("DQ", starTexNames[StellarClass::Spectral_DQ]);
+            starTexTable->getString("DX", starTexNames[StellarClass::Spectral_DX]);
+            starTexTable->getString("DZ", starTexNames[StellarClass::Spectral_DZ]);
 
-            string neutronStarTexName;
-            if (starTexTable->getString("NeutronStar", neutronStarTexName))
-            {
-                config->starTextures.neutronStarTex.setTexture(neutronStarTexName, "textures");
-            }
+            starTexTable->getString("Q", starTexNames[StellarClass::Spectral_Q]);
+            starTexTable->getString("QN", starTexNames[StellarClass::Spectral_QN]);
+            starTexTable->getString("QP", starTexNames[StellarClass::Spectral_QP]);
+            starTexTable->getString("QM", starTexNames[StellarClass::Spectral_QM]);
 
             string defaultTexName;
             if (starTexTable->getString("Default", defaultTexName))
