@@ -778,7 +778,7 @@ StarDetails::GetNeutronStarDetails(StellarClass::SpectralClass specClass,
             StellarClass::NeutronStarClassCount * StellarClass::SubclassCount;
         neutronStarDetails = new StarDetails*[nTypes];
         for (unsigned int i = 0; i < nTypes; i++)
-            neutronStarDetails[i] = nullptr
+            neutronStarDetails[i] = nullptr;
     }
 
     if (subclass > StellarClass::Subclass_Unknown)
@@ -848,12 +848,12 @@ StarDetails::GetNeutronStarDetails(StellarClass::SpectralClass specClass,
         default: break;  // Do nothing, but prevent GCC4 warnings (Beware: potentially dangerous)
         }
 
-        NeutronStarDetails[index] = CreateStandardStarType(name, temp, period);
+        neutronStarDetails[index] = CreateStandardStarType(name, temp, period);
         MultiResTexture starTex = starTextures.starTex[StellarClass::Spectral_Q];
         if (!starTex.isValid())
             starTex = starTextures.defaultTex;
-        NeutronStarDetails[index]->setTexture(starTex);
-        NeutronStarDetails[index]->setBolometricCorrection(bmagCorrection);
+        neutronStarDetails[index]->setTexture(starTex);
+        neutronStarDetails[index]->setBolometricCorrection(bmagCorrection);
     }
 
     return neutronStarDetails[index];
