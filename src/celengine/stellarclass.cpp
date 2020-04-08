@@ -70,9 +70,11 @@ string StellarClass::str() const
     switch (getStarType())
     {
     case StellarClass::WhiteDwarf:
-        return "WD";
+        s0 = "DDDDDDDD"[(unsigned int) getSpectralClass()];
+        s1 = "0123456789"[getSubclass()];
     case StellarClass::NeutronStar:
-        return "Q";
+        s0 = "QQQQ"[(unsigned int) getSpectralClass()];
+        s1 = "0123456789"[getSubclass()];
     case StellarClass::BlackHole:
         return "X";
     case StellarClass::NormalStar:
@@ -136,7 +138,7 @@ StellarClass::packV2() const
 {
     uint16_t sc = (starType == StellarClass::WhiteDwarf ? specClass - 1 : specClass);
 
-    return (((uint16_t) starType         << 13) |
+    return (((uint16_t) starType         << 14) |
            (((uint16_t) sc       & 0x1f) << 8)  |
            (((uint16_t) subclass & 0x0f) << 4)  |
            ((uint16_t)  lumClass & 0x0f));
@@ -146,7 +148,7 @@ StellarClass::packV2() const
 bool
 StellarClass::unpackV1(uint16_t st)
 {
-    starType = static_cast<StellarClass::StarType>(st >> 12);
+    starType = static_cast<StellarClass::StarType>(st >> 13);
 
     switch (starType)
     {
@@ -167,6 +169,12 @@ StellarClass::unpackV1(uint16_t st)
         lumClass = Lum_Unknown;
         break;
     case NeutronStar:
+        if ((st >> 4 & 0xf) >= NeutronStarClassCount)
+            return false;
+        specClass = static_cast<SpectralClass>((st >> 4 & 0xf) + SpectralClass::Spectral_Q);
+        subclass = st >> 4 & 0xf;
+        lumClass = Lum_Unknown;
+        break;
     case BlackHole:
         specClass = Spectral_Unknown;
         subclass = Subclass_Unknown;
@@ -200,6 +208,12 @@ StellarClass::unpackV2(uint16_t st)
         lumClass = Lum_Unknown;
         break;
     case NeutronStar:
+        if ((st >> 4 & 0xf) >= NeutronStarClassCount)
+            return false;
+        specClass = static_cast<SpectralClass>((st >> 4 & 0xf) + SpectralClass::Spectral_Q);
+        subclass = st >> 4 & 0xf;
+        lumClass = Lum_Unknown;
+        break;
     case BlackHole:
         specClass = Spectral_Unknown;
         subclass = Subclass_Unknown;
@@ -251,6 +265,9 @@ enum ParseState
     WDTypeState,
     WDExtendedTypeState,
     WDSubclassState,
+    NeutronStarTypeState,
+    NeutronStarExtendedTypeState,
+    NeutronStarSubclassState,
     SubdwarfPrefixState,
 };
 
@@ -280,7 +297,8 @@ StellarClass::parse(const string& st)
             {
             case 'Q':
                 starType = StellarClass::NeutronStar;
-                state = EndState;
+                specClass = StellarClass::Spectral_Q;
+                state = NeutronStarTypeState;
                 break;
             case 'X':
                 starType = StellarClass::BlackHole;
@@ -317,6 +335,11 @@ StellarClass::parse(const string& st)
                 break;
             case 'N':
                 specClass = StellarClass::Spectral_WN;
+                state = NormalStarSubclassState;
+                i++;
+                break;
+            case 'O':
+                specClass = StellarClass::Spectral_WO;
                 state = NormalStarSubclassState;
                 i++;
                 break;
@@ -607,6 +630,51 @@ StellarClass::parse(const string& st)
             break;
 
         case WDSubclassState:
+            if (isdigit(c))
+            {
+                subclass = (unsigned int) c - (unsigned int) '0';
+                i++;
+            }
+            state = EndState;
+            break;
+
+        case NeutronStarTypeState:
+            switch (c)
+            {
+            case 'N':
+                specClass = StellarClass::Spectral_QN;
+                i++;
+                break;
+            case 'P':
+                specClass = StellarClass::Spectral_QP;
+                i++;
+                break;
+            case 'M':
+                specClass = StellarClass::Spectral_QM;
+                i++;
+                break;
+            default:
+                specClass = StellarClass::Spectral_Q;
+                break;
+            }
+            state = NeutronStarExtendedTypeState;
+            break;
+
+        case NeutronStarExtendedTypeState:
+            switch (c)
+            {
+            case 'P': // pulsars
+            case 'M': // magnetars
+            case 'N': // non-pulsating neutron stars
+                i++;
+                break;
+            default:
+                state = NeutronStarSubclassState;
+                break;
+            }
+            break;
+
+        case NeutronStarSubclassState:
             if (isdigit(c))
             {
                 subclass = (unsigned int) c - (unsigned int) '0';
