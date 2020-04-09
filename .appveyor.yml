@@ -1,4 +1,4 @@
-version: 1.7.0-dev-{build}
+version: cel+-1.7.0-dev-{build}
 
 only_commits:
   files:
