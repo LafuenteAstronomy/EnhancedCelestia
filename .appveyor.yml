@@ -92,3 +92,7 @@ after_build:
 #- type "c:\projects\celestia\build\CMakeFiles\CMakeOutput.log"
 #- type "c:\projects\celestia\build\CMakeFiles\CMakeError.log"
 #- type "c:\projects\celestia\build\CMakeCache.txt"
+
+
+# build cache to preserve files/folders between builds
+cache: c:\tools\vcpkg\installed\
