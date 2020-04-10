@@ -22,7 +22,7 @@ branches:
   - master
 
 artifacts:
-- path: '**/cel+-*.7z'
+- path: '**/celestia-*.7z'
   name: win
 # Build worker image (VM template)
 image: "Visual Studio 2015"
@@ -80,7 +80,7 @@ build_script:
 
 after_build:
   - cmd: >-
-      cd c:\projects\cel+\build\src\cel+
+      cd c:\projects\celestia\build\src\celestia
 
       7z a cel+-win.x86.7z win32\Release\*
 
