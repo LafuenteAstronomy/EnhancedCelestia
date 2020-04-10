@@ -28,7 +28,7 @@ artifacts:
 image: "Visual Studio 2015"
 
 # clone directory
-clone_folder: c:\projects\celestia
+clone_folder: c:\projects\cel+
 
 # set clone depth
 clone_depth: 1
@@ -80,7 +80,7 @@ build_script:
 
 after_build:
   - cmd: >-
-      cd c:\projects\enhancedcelestia\build\src\cel+
+      cd c:\projects\cel+\build\src\cel+
 
       7z a cel+-win.x86.7z win32\Release\*
 
