@@ -28,7 +28,7 @@ artifacts:
 image: "Visual Studio 2015"
 
 # clone directory
-clone_folder: c:\projects\cel+
+clone_folder: c:\projects\celestia
 
 # set clone depth
 clone_depth: 1
